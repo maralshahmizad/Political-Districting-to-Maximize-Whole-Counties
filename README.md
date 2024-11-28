@@ -1,1 +1,1 @@
-# Political-Districting-to-Maximize-Whole-Counties
+# Political Districting to Maximize Whole Counties
