@@ -763,7 +763,7 @@ def max_cluster_main(G, DG, L, U, k, whole_counties, split_counties, max_t=4, re
         print("\n****************************")
         print("Heuristic iteration #",iteration)
         print("****************************")
-        (iclusters, isizes) = carve_heuristic(G, DG, L, U, k, whole_counties, randomized_carving=True, sketch_intensity=sketch_intensity))
+        (iclusters, isizes) = carve_heuristic(G, DG, L, U, k, whole_counties, randomized_carving=True, sketch_intensity=sketch_intensity)
         if objective(G, iclusters) > objective(G, clusters):
             (clusters, sizes) = (iclusters, isizes)
             print("new incumbent!")
