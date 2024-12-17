@@ -596,14 +596,10 @@ def cut_callback(m, where):
                 split_neighbors = [ u for v in component for u in DG.neighbors(v) if u in S and u in m._split_counties ]
                 assert len(split_neighbors) > 0
                 if len(split_neighbors) == 1:
-                    split_neighbor = split_neighbors[0]
                     # if all of component is assigned to j, then need another one of its neighbors too
                     neighbors_not_sn = { u for v in component for u in DG.neighbors(v) if u not in S }
                     neighbors_not_sn = list(neighbors_not_sn)
                     m.cbLazy( gp.quicksum( (1-m._x[v,j]) for v in component ) + gp.quicksum( m._x[v,j] for v in neighbors_not_sn ) >= 1 )
-                    component_names = [ DG.nodes[v]['NAME20'] for v in component ]
-                    neighbor_names = [ DG.nodes[v]['NAME20'] for v in neighbors_not_sn ]
-                    
             
         # check that each whole county i is "close" to a split county
         for i in S:
