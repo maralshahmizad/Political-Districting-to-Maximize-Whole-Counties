@@ -41,7 +41,6 @@ def labeling_contiguity_callback(m, where):
     DG = m._DG
     sketch_intensity = m._sketch_intensity
 
-
     # first, check connectivity
     disconnected = False
     for j in range(m._parts):

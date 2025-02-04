@@ -227,6 +227,85 @@ def find_cluster(G, required_nodes, L, U, k, verify=True):
 max_cluster_cache = dict()
 
 
+
+# def recom_t_opt(G, DG, clusters, sizes, L, U, t, k, whole_counties, split_counties, try_max_cluster=True, try_min_cut=True):
+    
+# #      DG = nx.DiGraph(G)
+    
+#     assert try_max_cluster or try_min_cut # otherwise, why are you here???
+    
+#     num_clusters = len( clusters )
+#     for comb in combinations( range(num_clusters), t ):
+        
+#         improved_clusters = False
+#         improved_cut_edges = False
+        
+#         # if the cluster union is disconnected, then skip it.
+#         cluster_union = [ i for p in comb for i in clusters[p] ]
+#         if not nx.is_connected( G.subgraph(cluster_union) ):
+#             continue
+        
+#         # incumbents
+#         temp_clusters = [ clusters[p] for p in comb ]
+#         temp_sizes = [ sizes[p] for p in comb ]
+#         cluster_size = sum( temp_sizes )
+#         num_clusters = t
+        
+#         ###############################
+#         # increase number of clusters?
+#         ###############################
+#         if try_max_cluster:
+            
+#             (max_whole_clusters, max_whole_sizes) = clustering_for_max_whole(G, DG, k, L, U, whole_counties, split_counties)
+            
+# #             (hess_clusters, hess_sizes, cluster_UB) = max_county_clustering_via_hess(G.subgraph(cluster_union), L, U, cluster_size, initial_clusters=temp_clusters, initial_sizes=temp_sizes) 
+
+#             num_clusters = len(max_whole_clusters)
+
+#             if num_clusters > t:
+#                 cut_cost = number_of_cut_edges(G.subgraph(cluster_union),max_whole_clusters)
+#                 cut_cost -= number_of_cut_edges(G.subgraph(cluster_union),temp_clusters)
+#                 print("clusters +=", num_clusters-t,"( w/ cut edges +=",cut_cost,")")
+#                 improved_clusters = True
+#                 temp_clusters = max_whole_clusters
+#                 temp_sizes = max_whole_sizes
+
+#         ################################
+#         # decrease number of cut edges?
+#         ################################
+#         if try_min_cut:
+            
+#             old_cut_edges = number_of_cut_edges( G.subgraph(cluster_union), temp_clusters )
+
+#             (temp_clusters, temp_sizes, cut_edge_LB, cut_edge_UB) = min_cut_county_clustering_via_labeling( G.subgraph(cluster_union), L, U, cluster_size, num_clusters, time_limit=60, initial_clusters=temp_clusters, initial_sizes=temp_sizes)
+
+#             if cut_edge_UB < old_cut_edges:
+#                 print("cut edges -=",old_cut_edges-cut_edge_UB)
+#                 improved_cut_edges = True
+        
+#         ##############################################
+#         # found a local search move? if so, update clusters and recurse
+#         ##############################################
+#         if improved_clusters or improved_cut_edges:
+            
+#             # write over the existing clusters
+#             for p in range(t):
+#                 j = comb[p]
+#                 clusters[j] = temp_clusters[p]
+#                 sizes[j] = temp_sizes[p]
+            
+#             # append the 'extra' clusters that this soln found (if any)
+#             if improved_clusters:
+#                 for p in range(t, num_clusters ):
+#                     clusters.append( temp_clusters[p] )
+#                     sizes.append( temp_sizes[p] )
+            
+#             return recom_t_opt(G, DG, clusters, sizes, L, U, t,k, whole_counties, split_counties, try_max_cluster, try_min_cut)
+    
+#     # Failed to find an improving move; return the input clusters/sizes.
+#     return ( clusters, sizes )
+
+
 def number_of_cut_edges( G, clusters ):
     labeling = { i : j for j in range(len(clusters)) for i in clusters[j] }
     return sum( 1 for i,j in G.edges if labeling[i] != labeling[j] )
@@ -596,10 +675,14 @@ def cut_callback(m, where):
                 split_neighbors = [ u for v in component for u in DG.neighbors(v) if u in S and u in m._split_counties ]
                 assert len(split_neighbors) > 0
                 if len(split_neighbors) == 1:
+                    split_neighbor = split_neighbors[0]
                     # if all of component is assigned to j, then need another one of its neighbors too
                     neighbors_not_sn = { u for v in component for u in DG.neighbors(v) if u not in S }
                     neighbors_not_sn = list(neighbors_not_sn)
                     m.cbLazy( gp.quicksum( (1-m._x[v,j]) for v in component ) + gp.quicksum( m._x[v,j] for v in neighbors_not_sn ) >= 1 )
+                    component_names = [ DG.nodes[v]['NAME20'] for v in component ]
+                    neighbor_names = [ DG.nodes[v]['NAME20'] for v in neighbors_not_sn ]
+                    #print("adding cut for component =",component_names,"and neighbors =",neighbor_names)
             
         # check that each whole county i is "close" to a split county
         for i in S:
@@ -625,7 +708,7 @@ def cut_callback(m, where):
             B = [ v for v in DG.nodes if v not in VB ]
             m.cbLazy( m._x[i,j] <= gp.quicksum( m._x[v,j] for v in B )  )
             B_names = [ DG.nodes[v]['NAME20'] for v in B ]
-            
+            #print("adding cut for (whole) i =",DG.nodes[i]['NAME20'],"j =",DG.nodes[j]['NAME20'],"and B =",B_names)
             
         # check that every split county is close to another split county (or is only split county in cluster)
         for i in S:
@@ -651,7 +734,7 @@ def cut_callback(m, where):
             B = [ v for v in DG.nodes if v not in VB ]
             m.cbLazy( m._x[i,j] <= gp.quicksum( m._x[v,j] for v in B )  )
             B_names = [ DG.nodes[v]['NAME20'] for v in B ]
-            
+            #print("adding cut for (split) i =",DG.nodes[i]['NAME20'],"j =",DG.nodes[j]['NAME20'],"and B =",B_names)
             
         # check that no cluster has a pair of split counties, with an overpopulated "bridge" between them
         for component in nx.strongly_connected_components(DG.subgraph(S_whole)):
@@ -667,7 +750,7 @@ def cut_callback(m, where):
                     component_names = [ DG.nodes[v]['NAME20'] for v in component ]
                     neighbor_names = [ DG.nodes[v]['NAME20'] for v in neighbors_not_sn ]
                     split_neighbor_names = [ DG.nodes[v]['NAME20'] for v in split_neighbors ]
-                  
+                    #print("for bridge between =",split_neighbor_names,"adding cut for component =",component_names,"and neighbors =",neighbor_names)
                     
         # check if any cut vertex c of the cluster neighbors a component G[S'] that has a bad population
         for c in nx.articulation_points(G.subgraph(S)):
@@ -680,12 +763,13 @@ def cut_callback(m, where):
                 for q in range(1,k+1):
                     if q*U - DG.nodes[c]['TOTPOP'] <= population and population <= q*L:
                         neighbors_not_S = { u for v in component for u in DG.neighbors(v) if u not in S } 
-                        m.cbLazy( gp.quicksum( (1-m._x[v,j]) for v in component ) + gp.quicksum( m._x[v,j] for v in neighbors_not_S ) >= 1)
+                        m.cbLazy( gp.quicksum( (1-m._x[v,j]) for v in component ) + gp.quicksum( m._x[v,j] for v in neighbors_not_S ) >= 1 )
                         component_names = [ DG.nodes[v]['NAME20'] for v in component ]
                         neighbor_names = [ DG.nodes[v]['NAME20'] for v in neighbors_not_S ]
-                    
+                        #print("for articulation point =",DG.nodes[c]['NAME20'],"and bad population component =",component_names,"and neighbors =",neighbor_names)
                         
-    # Check sketch feasibility 
+########################## Check sketch feasibility #############################  
+
     centers = [ j for j in DG.nodes if xval[j,j] > 0.5 ]
     clusters = [ [ i for i in G.nodes if xval[i,j] > 0.5 ] for j in centers ]
     sizes = [ round( yval[j]) for j in centers ]
@@ -704,6 +788,7 @@ def cut_callback(m, where):
     
     return
 
+#########################################################################################
 
 def feasibility_callback(m, where):
     
@@ -760,6 +845,24 @@ def max_cluster_main(G, DG, L, U, k, whole_counties, split_counties, max_t=4, re
         print("Heuristic iteration #",iteration)
         print("****************************")
         (iclusters, isizes) = carve_heuristic(G, DG, L, U, k, whole_counties, randomized_carving=True, sketch_intensity=sketch_intensity)
+    # drawing each cluster
+
+        for j in range(len(iclusters)):
+            each_cluster =iclusters[j]
+            cluster_names = {i : G.nodes[i]['NAME20'] for i in each_cluster }
+            GS = G.subgraph(each_cluster)
+            node_pos = { i : ( GS.nodes[i]['X'], GS.nodes[i]['Y'] ) for i in GS.nodes }
+            node_colors = [ "red" if i in split_counties else "green" for i in GS.nodes ]
+
+            my_labels = { i : G.nodes[i]['NAME20'] + "\n" + f"{GS.nodes[i]['TOTPOP']:,}" for i in GS.nodes }
+            nx.draw(GS, pos=node_pos, with_labels=True, labels=my_labels, node_color=node_colors, node_size=2000)
+            plt.show()
+            
+            print("Cluster",j,":", cluster_names)
+
+#         for t in range(2, max_t+1):
+#             (iclusters, isizes) = recom_t_opt(G, DG, iclusters, isizes, L, U, t,k, whole_counties, split_counties)
+#             print("t =",t,"-> #clusters, #cut edges =",len(iclusters),number_of_cut_edges(G, iclusters) )
         if objective(G, iclusters) > objective(G, clusters):
             (clusters, sizes) = (iclusters, isizes)
             print("new incumbent!")
@@ -787,15 +890,22 @@ def max_cluster_main(G, DG, L, U, k, whole_counties, split_counties, max_t=4, re
     start_time = time.time()
     if len(max_whole_clusters) > results['heuristic_num_clusters']:
         (clusters, sizes) = (max_whole_clusters, max_whole_sizes)
-     
+#         for t in range(2, max_t+1):
+#             (clusters, sizes) = recom_t_opt(G, DG, clusters, sizes, L, U, t,k, whole_counties, split_counties, try_max_cluster=False)
+#             print("t =",t,"-> #clusters, #cut edges =",len(clusters),number_of_cut_edges(G, clusters) )
+            
     results['cleanup_time'] = '{0:.2f}'.format( time.time() - start_time )
+
     results['clusters'] = clusters
     results['sizes'] = sizes
     results['num_clusters'] = len(clusters)
     results['num_cut_edges'] = number_of_cut_edges(G, clusters)
+#     results['cluster_UB'] = cluster_UB
     
     return (clusters, sizes, results)
 
+
+#########################################################################################
 def clustering_for_max_whole(G, DG, k, L, U, whole_counties, split_counties, initial_clusters=None, initial_sizes=None):  
 
     # setup    
@@ -905,6 +1015,13 @@ def clustering_for_max_whole(G, DG, k, L, U, whole_counties, split_counties, ini
         dist = nx.shortest_path_length( DG, source = i, weight = 'pweight' )
         nearby_split_counties = [ v for v in split_counties if dist[v] <= U ]
         m.addConstrs( x[i,j] <= gp.quicksum( x[v,j] for v in nearby_split_counties ) for j in split_counties )
+        #print(DG.nodes[i]['NAME20'],", which is whole, has this many nearby split counties:",len(nearby_split_counties))
+        #print("They are:",nearby_split_counties)
+        #if len(nearby_split_counties)==0:
+        #    no_near.append(i)
+    #print("These whole counties have no split counties nearby:")
+    #for i in no_near:
+    #    print(i,DG.nodes[i]['NAME20'],DG.nodes[i]['TOTPOP'])
     
     # callback info
     m._G = G

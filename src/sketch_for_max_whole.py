@@ -142,7 +142,6 @@ def sketch(G, L, U, k, whole_counties=list(), time_limit=None):
     m._DG = nx.DiGraph(G)
     m._parts = k
     m._x = x
-    m._sketch_intensity = sketch_intensity
     
     # first, maximize preserved edges
     m.setObjective( y.sum(), GRB.MAXIMIZE )
