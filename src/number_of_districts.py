@@ -30,3 +30,5 @@ state_senate_districts_2020 = { 'AL' : 35, 'AK' : 20, 'AZ' : 30, 'AR' : 35, 'CA'
                                 'OK' : 48, 'OR' : 30, 'PA' : 50, 'RI' : 38, 'SC' : 46, 
                                 'SD' : 35, 'TN' : 33, 'TX' : 31, 'UT' : 29, 'VT' : 30, 
                                 'VA' : 40, 'WA' : 49, 'WV' : 17, 'WI' : 33, 'WY' : 31 }
+
+states = sorted( list( state_senate_districts_2020.keys() ) )
