@@ -162,6 +162,21 @@ def cluster_for_max_whole(G, L, U, k, whole_counties, sketch_time_limit=None, ti
         if is_within_window(G.nodes[j]['TOTPOP'], L, U):
             for i in G.nodes:
                 m._x[i,j].start = 1 if i==j else 0
+
+    # # hop-based restrictions (invalid!)
+    # hop_constrs = dict()
+    # h = 3
+    # for i in G.nodes:
+    #     dist = nx.single_source_shortest_path_length(G, source=i)
+    #     hop_constrs[i] = m.addConstrs( x[i,j] == 0 for j in G.nodes if dist[j] > h )
+    
+    # m._callback = cluster_callback
+    # m.Params.TimeLimit = 3600
+    # m.optimize(m._callback)
+        
+    # for i in G.nodes:
+    #     m.remove( hop_constrs[i] )
+    # # end hop-based restrictions
     
     # optimize
     m.Params.TimeLimit = time_limit
@@ -255,6 +270,109 @@ def cluster_callback(m, where):
 
     num_clusters = sum( round( xval[j,j] ) for j in G.nodes )
     printif(m._verbose, f"Entered callback with # clusters = { num_clusters }.")
+
+    # BEGIN AD-HOC CUTS (EXPERIMENTAL)
+    # split_roots = [ j for j in DG.nodes if xval[j,j] > 0.5 and j in m._split_counties ]
+    # for j in split_roots:
+        
+    #     # which counties are assigned to this split root?
+    #     S = [ i for i in DG.nodes if xval[i,j] > 0.5 ]
+        
+    #     # check that there are no overpopulated appendages
+    #     S_whole = [ i for i in m._whole_counties if xval[i,j] > 0.5 ]
+    #     for component in nx.strongly_connected_components(DG.subgraph(S_whole)):
+    #         population = sum( DG.nodes[v]['TOTPOP'] for v in component )
+    #         if population > U:
+    #             split_neighbors = [ u for v in component for u in DG.neighbors(v) if u in S and u in m._split_counties ]
+    #             assert len(split_neighbors) > 0
+    #             if len(split_neighbors) == 1:
+    #                 split_neighbor = split_neighbors[0]
+    #                 # if all of component is assigned to j, then need another one of its neighbors too
+    #                 neighbors_not_sn = { u for v in component for u in DG.neighbors(v) if u not in S }
+    #                 neighbors_not_sn = list(neighbors_not_sn)
+    #                 m.cbLazy( gp.quicksum( (1-m._x[v,j]) for v in component ) + gp.quicksum( m._x[v,j] for v in neighbors_not_sn ) >= 1 )
+    #                 added_cut = True
+            
+    #     # check that each whole county i is "close" to a split county
+    #     for i in S:
+    #         if i in m._split_counties:
+    #             continue
+                
+    #         dist = nx.shortest_path_length( DG.subgraph(S), source = i, weight = 'pweight' )
+    #         nearby_split_counties = [ v for v in dist.keys() if dist[v] <= U and v in m._split_counties ]
+            
+    #         # i is close to a split county. We might be good.
+    #         if len(nearby_split_counties) > 0:
+    #             continue
+                
+    #         # otherwise, soln is definitely bad. Add a (minimal) cut.
+    #         B = [ v for v in DG.nodes if xval[v,j] < 0.5 ] # "bad" nodes. We can write x[i,j] <= sum( x[v,j] for v in B )
+    #         VB = [ v for v in S ] # V\B
+    #         for v in B: # move v from B to VB?
+    #             VB.append(v)
+    #             dist = nx.shortest_path_length( DG.subgraph(VB), source = i, weight = 'pweight' )
+    #             nearby_split_counties = [ v for v in dist.keys() if dist[v] <= U and v in m._split_counties ]
+    #             if len(nearby_split_counties) > 0:
+    #                 VB.pop() # remove v
+    #         B = [ v for v in DG.nodes if v not in VB ]
+    #         m.cbLazy( m._x[i,j] <= gp.quicksum( m._x[v,j] for v in B )  )
+    #         added_cut = True
+            
+    #     # check that every split county is close to another split county (or is only split county in cluster)
+    #     for i in S:
+    #         if i in m._whole_counties or i == j:
+    #             continue
+                
+    #         dist = nx.shortest_path_length( DG.subgraph(S), source = i, weight = 'pweight' )
+    #         nearby_split_counties = [ v for v in dist.keys() if dist[v] <= U + DG.nodes[i]['TOTPOP'] and v in m._split_counties and v != i ]
+            
+    #         # i is close to a split county. We might be good.
+    #         if len(nearby_split_counties) > 0:
+    #             continue
+                
+    #         # otherwise, soln is definitely bad. Add a (minimal) cut.
+    #         B = [ v for v in DG.nodes if xval[v,j] < 0.5 ] # "bad" nodes. We can write x[i,j] <= sum( x[v,j] for v in B )
+    #         VB = [ v for v in S ] # V\B
+    #         for v in B: # move v from B to VB?
+    #             VB.append(v)
+    #             dist = nx.shortest_path_length( DG.subgraph(VB), source = i, weight = 'pweight' )
+    #             nearby_split_counties = [ v for v in dist.keys() if dist[v] <= U + DG.nodes[i]['TOTPOP'] and v in m._split_counties and v != i ]
+    #             if len(nearby_split_counties) > 0:
+    #                 VB.pop() # remove v
+    #         B = [ v for v in DG.nodes if v not in VB ]
+    #         m.cbLazy( m._x[i,j] <= gp.quicksum( m._x[v,j] for v in B )  )
+    #         added_cut = True
+            
+    #     # check that no cluster has a pair of split counties, with an overpopulated "bridge" between them
+    #     for component in nx.strongly_connected_components(DG.subgraph(S_whole)):
+    #         population = sum( DG.nodes[v]['TOTPOP'] for v in component )
+    #         if population > U:
+    #             split_neighbors = [ u for v in component for u in DG.neighbors(v) if u in S and u in m._split_counties ]
+    #             assert len(split_neighbors) > 0
+    #             if len(split_neighbors) == 2 and split_neighbors[0] != split_neighbors[1]:
+    #                 # if all of component is assigned to j, then need another one of its neighbors too
+    #                 neighbors_not_sn = { u for v in component for u in DG.neighbors(v) if u not in S }
+    #                 neighbors_not_sn = list(neighbors_not_sn)
+    #                 m.cbLazy( gp.quicksum( (1-m._x[v,j]) for v in component ) + gp.quicksum( m._x[v,j] for v in neighbors_not_sn ) >= 1 )
+    #                 added_cut = True
+                    
+    #     # check if any cut vertex c of the cluster neighbors a component G[S'] that has a bad population
+    #     for c in nx.articulation_points(G.subgraph(S)):
+    #         if c in m._split_counties:
+    #             continue
+    #         Sc = [ i for i in S if i != c ]
+    #         for component in nx.connected_components(G.subgraph(Sc)):
+    #             population = sum( DG.nodes[i]['TOTPOP'] for i in component )
+    #             for q in range(1,k+1):
+    #                 if q*U - DG.nodes[c]['TOTPOP'] <= population and population <= q*L:
+    #                     neighbors_not_S = { u for v in component for u in DG.neighbors(v) if u not in S } 
+    #                     m.cbLazy( gp.quicksum( (1-m._x[v,j]) for v in component ) + gp.quicksum( m._x[v,j] for v in neighbors_not_S ) >= 1 )
+    #                     added_cut = True
+                        
+    # if added_cut:
+    #     printif(m._verbose, "Exiting callback before checking sketch-feasibility, because cut was already added.")
+    #     return
+    # END AD-HOC CUTS
 
     centers = [ j for j in G.nodes if xval[j,j] > 0.5 ]
     clusters = [ [ i for i in G.nodes if xval[i,j] > 0.5 ] for j in centers ]
