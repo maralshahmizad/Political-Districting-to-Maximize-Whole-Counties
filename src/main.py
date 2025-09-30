@@ -129,7 +129,7 @@ def get_max_whole_UBs(GC, L, U, k, verbose=True):
     results['articulation_UB'] = obj( GC, results['articulation_constraints'] )
 
     # vicinity + generalized vicinity + articulation + vertex cut UB
-    results['generalized_articulation_constraints'] = get_initial_constraints(GC, L, U, k, vi=True, gvi=True, ai=True, gai=True, verbose=verbose)
-    results['generalized_articulation_UB'] = obj( GC, results['generalized_articulation_constraints'] )
+    results['vertex_cut_constraints'] = get_initial_constraints(GC, L, U, k, vi=True, gvi=True, ai=True, gai=True, verbose=verbose)
+    results['vertex_cut_UB'] = obj( GC, results['vertex_cut_constraints'] )
 
     return results
