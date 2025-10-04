@@ -2,7 +2,7 @@
 
 | **State** | **Congress** | **Senate**|**House**|
 |----------|----------|----------|----------|
-| **AL** |<table><tr><td>[Inequalities]()</td><td>[Map](\)</td></tr></table> | <table><tr><td>[Inequalities]()</td><td>[Map]()</td></tr></table>|<table><tr><td> [Inequalities]()</td><td>[Map]()</td></tr></table>|
+| **AL** |<table><tr><td>[Inequalities]()</td><td>[Map]()</td></tr></table> | <table><tr><td>[Inequalities]()</td><td>[Map]()</td></tr></table>|<table><tr><td> [Inequalities]()</td><td>[Map]()</td></tr></table>|
 | **AK** || <table><tr><td>[Inequalities]()</td><td>[Map]()</td></tr></table>|<table><tr><td> [Inequalities]()</td><td>[Map]()</td></tr></table>|
 | **AR**|<table><tr><td>[Inequalities]()</td><td>[Map]()</td></tr></table> | <table><tr><td>[Inequalities]()</td><td>[Map]()</td></tr></table>|<table><tr><td> [Inequalities]()</td><td>[Map]()</td></tr></table>|
 | **AZ**|<table><tr><td>[Inequalities]()</td><td>[Map]()</td></tr></table> | <table><tr><td>[Inequalities]()</td><td>[Map]()</td></tr></table>|<table><tr><td> [Inequalities]()</td><td>[Map]()</td></tr></table>|
