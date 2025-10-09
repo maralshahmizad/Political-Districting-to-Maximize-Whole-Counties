@@ -18,7 +18,7 @@ Below are illustrations of the approach for Iowa's state house, where our task i
 For each county $c \in C$, we merge its vertices $V_c$ from $G$ into a single county vertex, giving the county-level graph $G_C$:. 
 ![Figure 2](GC.png?raw=true "County-level graph $G_C$")
 
-Using the county-level graph, we identify the initial set family $\mathcal{I}_0$ of constraints shown below. Many of the sets $I \in \mathcal{I}$ have just one (``overpopulated'') county that must be split (shown in green), but one set is larger (shown in blue) and our code chooses one county from it to split. 
+Using the county-level graph, we identify the initial set family &#2110 of constraints shown below. Many of the sets $I \in \mathcal{I}$ have just one (``overpopulated'') county that must be split (shown in green), but one set is larger (shown in blue) and our code chooses one county from it to split. 
 ![Figure 3](IA_SH_inequalities.png?raw=true "Initial inequalities for main problem")
 
 The remaining counties are kept whole, forming the set $W$. The associated coarsened graph $G_W$ is shown below.
