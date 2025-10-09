@@ -18,7 +18,7 @@ Below are illustrations of the approach for Iowa's state house, where our task i
 For each county $c \in C$, we merge its vertices $V_c$ from $G$ into a single county vertex, giving the county-level graph $G_C$:. 
 ![Figure 2](GC.png?raw=true "County-level graph $G_C$")
 
-Using the county-level graph, we identify the initial set family ℐ of constraints shown below. Many of the sets $I \in ℐ$ have just one (``overpopulated'') county that must be split (shown in green), but one set is larger (shown in blue) and our code chooses one county from it to split. 
+Using the county-level graph, we identify the initial set family $ℐ_0$ of constraints shown below. Many of the sets $I \in ℐ_0$ have just one (``overpopulated'') county that must be split (shown in green), but one set is larger (shown in blue) and our code chooses one county from it to split. 
 ![Figure 3](IA_SH_inequalities.png?raw=true "Initial inequalities for main problem")
 
 The remaining counties are kept whole, forming the set $W$. The associated coarsened graph $G_W$ is shown below.
@@ -32,9 +32,9 @@ Each miniature instance is divided into districts using *sketch* and *detail*, y
 
 ## Results
 
-Our approach provides easy-to-understand optimality proofs suitable for courts and laypeople. Specifically, it produces a set family $\mathcal{I}$ with the property that at least one county from each set $I \in \mathcal{I}$ must be split. This is depicted as a county-level map in which a curve encircles each set $I\in \mathcal{I}$. Below are links to these initial inequalities. 
+Our approach provides easy-to-understand optimality proofs suitable for courts and laypeople. Specifically, it produces a set family $ℐ$ with the property that at least one county from each set $I \in ℐ$ must be split. This is depicted as a county-level map in which a curve encircles each set $I\in \mathcal{I}$. Below are links to these initial inequalities. 
 
-In practice, these sets rarely overlap, immediately showing that at least $|\mathcal{I}|$ counties must be split and providing the upper bound $|C|-|\mathcal{I}|$ on the max-whole objective, where $C$ is the set of counties. Our approach also generates maps that provide matching lower bounds, proving both bounds optimal. Below are links to such maps.
+In practice, these sets rarely overlap, immediately showing that at least $|ℐ|$ counties must be split and providing the upper bound $|C|-|ℐ|$ on the max-whole objective, where $C$ is the set of counties. Our approach also generates maps that provide matching lower bounds, proving both bounds optimal. Below are links to such maps.
 
 For (nearly) all instances, we obtain provably optimal maps. The only exception is Florida's congressional districts, for which we obtain bounds of [56,57]. That is, we can prove that no contiguous, population-balanced (+/-0.5%) map exists with more than 57 whole counties, and we provide a map with 56 whole counties.
 
