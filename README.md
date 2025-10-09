@@ -8,7 +8,7 @@ Table 2 near the end of the paper shows the maximum number of whole counties ver
 
 ## Approach
 
-To solve this problem, we propose integer programming techniques based on combinatorial Benders decomposition. The main problem decides which counties to keep whole, and the subproblem coarsens the selected counties and then seeks a feasible plan.
+To solve this problem, we propose integer programming techniques based on combinatorial Benders decomposition. The main problem decides which counties to keep whole, and the subproblem coarsens the selected counties and then seeks a feasible plan. The subproblem is solved with a (nontrivial) extension of the cluster-sketch-detail approach from [our previous paper](https://github.com/maralshahmizad/Political-Districting-to-Minimize-County-Splits/tree/main), which optimized a different county preservation score. 
 
 Our approach provides easy-to-understand optimality proofs suitable for courts and laypeople. Specifically, it produces a set family $\mathcal{I}$ with the property that at least one county from each set $I \in \mathcal{I}$ must be split. This is depicted as a county-level map in which a curve encircles each set $I\in \mathcal{I}$. Below are links to these initial inequalities. 
 
