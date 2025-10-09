@@ -32,7 +32,7 @@ Each miniature instance is divided into districts using *sketch* and *detail*, y
 
 ## Results
 
-Our approach provides easy-to-understand optimality proofs suitable for courts and laypeople. Specifically, it produces a set family $ℐ$ with the property that at least one county from each set $I \in ℐ$ must be split. This is depicted as a county-level map in which a curve encircles each set $I\in \mathcal{I}$. Below are links to these initial inequalities. 
+Our approach provides easy-to-understand optimality proofs suitable for courts and laypeople. Specifically, it produces a set family $ℐ$ with the property that at least one county from each set $I \in ℐ$ must be split. This is depicted as a county-level map in which a curve encircles each set $I\in ℐ$. Below are links to these initial inequalities $ℐ_0$. 
 
 In practice, these sets rarely overlap, immediately showing that at least $|ℐ|$ counties must be split and providing the upper bound $|C|-|ℐ|$ on the max-whole objective, where $C$ is the set of counties. Our approach also generates maps that provide matching lower bounds, proving both bounds optimal. Below are links to such maps.
 
