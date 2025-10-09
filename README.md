@@ -13,27 +13,21 @@ To solve this problem, we propose integer programming techniques based on combin
 ## Example
 
 Below are illustrations of the approach for Iowa's state house, where our task is to divide the state into $k=100$ contiguous districts, each with population between $L=30,309$ and $U=33,498$, so as to maximize the number of whole counties. Because Iowa has too many census blocks ($|V|=175,199$) to visualize effectively, we show Iowa's tract-level graph, which has $|V|=896$ vertices. (Our implementation, however, works with the block-level graph.)
-
 ![Figure 1](G.png?raw=true "Input graph $G=(V,E)$")
 
-For each county $c \in C$, we merge its vertices $V_c$ from $G$ into a single county vertex, giving the county-level graph $G_C$ shown below. 
-
+For each county $c \in C$, we merge its vertices $V_c$ from $G$ into a single county vertex, giving the county-level graph $G_C$:. 
 ![Figure 2](GC.png?raw=true "County-level graph $G_C$")
 
-Using the county-level graph, we identify the initial set family $\mathcal{I}_0$ of constraints shown below. 
-
+Using the county-level graph, we identify the initial set family $\mathcal{I}_0$ of constraints shown below. Many of the sets $I \in \mathcal{I}$ have just one (``overpopulated'') county that must be split (shown in green), but one set is larger (shown in blue) and our code chooses one county from it to split. 
 ![Figure 3](IA_SH_inequalities.png?raw=true "Initial inequalities for main problem")
 
-Many of the sets $I \in \mathcal{I}$ have just one (``overpopulated'') county that must be split (shown in green), but one set is larger (shown in blue) and our code chooses one to split. The remaining whole counties form the set $W$. The associated coarsened graph $G_W$ is shown below.
-
+The remaining counties are kept whole, forming the set $W$. The associated coarsened graph $G_W$ is shown below.
 ![Figure 4](GW.png?raw=true "Coarsened graph $G_W$")
 
-This coarsened graph is still quite large, so we find a county clustering to decompose it into miniature districting instances, as shown below.
-
+This coarsened graph is still quite large, so we find a county clustering to decompose it into miniature districting instances:
 ![Figure 5](clusters.png?raw=true "Miniature districting instances")
 
-Each miniature instance is divided into districts using *sketch* and *detail*, yielding the final max-whole map shown below.
-
+Each miniature instance is divided into districts using *sketch* and *detail*, yielding the final max-whole map:
 ![Figure 6](IA.png?raw=true "Max-whole map")
 
 ## Results
