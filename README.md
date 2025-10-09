@@ -10,6 +10,34 @@ Table 2 near the end of the paper shows the maximum number of whole counties ver
 
 To solve this problem, we propose integer programming techniques based on combinatorial Benders decomposition. The main problem decides which counties to keep whole, and the subproblem coarsens the selected counties and then seeks a feasible plan. The subproblem is solved with a (nontrivial) extension of the cluster-sketch-detail approach from [our previous paper](https://github.com/maralshahmizad/Political-Districting-to-Minimize-County-Splits/tree/main), which optimized a different county preservation score. 
 
+## Example
+
+Below are illustrations of the approach for Iowa's state house, where our task is to divide the state into $k=100$ contiguous districts, each with population between $L=30,309$ and $U=33,498$, so as to maximize the number of whole counties. Because Iowa has too many census blocks ($|V|=175,199$) to visualize effectively, we show Iowa's tract-level graph, which has $|V|=896$ vertices. (Our implementation, however, works with the block-level graph.)
+
+![Figure 1](G.png?raw=true "Input graph $G=(V,E)$")
+
+For each county $c \in C$, we merge its vertices $V_c$ from $G$ into a single county vertex, giving the county-level graph $G_C$ shown below. 
+
+![Figure 2](GC.png?raw=true "County-level graph $G_C$")
+
+Using the county-level graph, we identify the initial set family $\mathcal{I}_0$ of constraints shown below. 
+
+![Figure 3](IA_SH_inequalities.png?raw=true "Initial inequalities for main problem")
+
+Many of the sets $I \in \mathcal{I}$ have just one (``overpopulated'') county that must be split (shown in green), but one set is larger (shown in blue) and our code chooses one to split. The remaining whole counties form the set $W$. The associated coarsened graph $G_W$ is shown below.
+
+![Figure 4](GW.png?raw=true "Coarsened graph $G_W$")
+
+This coarsened graph is still quite large, so we find a county clustering to decompose it into miniature districting instances, as shown below.
+
+![Figure 5](clusters.png?raw=true "Miniature districting instances")
+
+Each miniature instance is divided into districts using *sketch* and *detail*, yielding the final max-whole map shown below.
+
+![Figure 6](IA.png?raw=true "Max-whole map")
+
+## Results
+
 Our approach provides easy-to-understand optimality proofs suitable for courts and laypeople. Specifically, it produces a set family $\mathcal{I}$ with the property that at least one county from each set $I \in \mathcal{I}$ must be split. This is depicted as a county-level map in which a curve encircles each set $I\in \mathcal{I}$. Below are links to these initial inequalities. 
 
 In practice, these sets rarely overlap, immediately showing that at least $|\mathcal{I}|$ counties must be split and providing the upper bound $|C|-|\mathcal{I}|$ on the max-whole objective, where $C$ is the set of counties. Our approach also generates maps that provide matching lower bounds, proving both bounds optimal. Below are links to such maps.
