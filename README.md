@@ -1,5 +1,21 @@
 # **Political Districting to Maximize Whole Counties**
 
+Python code for the [paper]() "Political districting to maximize whole counties" by Maral Shahmizad and Austin Buchanan. 
+
+We consider a stylized redistricting problem. The task is to divide a state into $k$ contiguous districts each having a population between $L$ and $U$ such that the number of whole counties is maximized. 
+
+Table 2 near the end of the paper shows the maximum number of whole counties versus the number of whole counties in enacted maps for each state and district type (congressional, state senate, state house).
+
+## Approach
+
+To solve this problem, we propose integer programming techniques based on combinatorial Benders decomposition. The main problem decides which counties to keep whole, and the subproblem coarsens the selected counties and then seeks a feasible plan.
+
+Our approach provides easy-to-understand optimality proofs suitable for courts and laypeople. Specifically, it produces a set family $\mathcal{I}$ with the property that at least one county from each set $I \in \mathcal{I}$ must be split. This is depicted as a county-level map in which a curve encircles each set $I\in \mathcal{I}$. Below are links to these initial inequalities. 
+
+In practice, these sets rarely overlap, immediately showing that at least $|\mathcal{I}|$ counties must be split and providing the upper bound $|C|-|\mathcal{I}|$ on the max-whole objective, where $C$ is the set of counties. Our approach also generates maps that provide matching lower bounds, proving both bounds optimal. Below are links to such maps.
+
+For (nearly) all instances, we obtain provably optimal maps. The only exception is Florida's congressional districts, for which we obtain bounds of [56,57]. That is, we can prove that no contiguous, population-balanced (+/-0.5%) map exists with more than 57 whole counties, and we provide a map with 56 whole counties.
+
 | **State** | **Congress** | **Senate**|**House**|
 |----------|----------|----------|----------|
 | **AL** |<table><tr><td>[Inequalities](https://github.com/maralshahmizad/Political-Districting-to-Maximize-Whole-Counties/blob/main/src/png/AL_CD_inequalities.png)</td><td>[Map](https://davesredistricting.org/maps#viewmap::56c3a7d2-9b40-4b0b-b29a-babf988c4ee5)</td></tr></table> | <table><tr><td>[Inequalities](https://github.com/maralshahmizad/Political-Districting-to-Maximize-Whole-Counties/blob/main/src/png/AL_SS_inequalities.png)</td><td>[Map](https://davesredistricting.org/maps#viewmap::be550ed0-bd4a-4c9a-acd1-bbade5ec76fa)</td></tr></table>|<table><tr><td> [Inequalities](https://github.com/maralshahmizad/Political-Districting-to-Maximize-Whole-Counties/blob/main/src/png/AL_SH_inequalities.png)</td><td>[Map](https://davesredistricting.org/maps#viewmap::3b11b515-144c-4f78-893c-19a51abc9095)</td></tr></table>|
