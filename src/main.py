@@ -7,7 +7,7 @@ from utils import printif, number_of_whole_counties, check_plan
 from initialize import get_initial_constraints
 from csd import cluster_sketch_detail
 
-def solve_max_whole(G, L, U, k, incumbent_plan, verbose=True, time_limit=7200):
+def solve_max_whole(G, L, U, k, incumbent_plan, must_split_fips=list(), verbose=True, time_limit=7200):
     '''
     Solves max whole districting problem in graph G 
     :param G: granular graph (e.g., precinct-level, tract-level, or block-level)
@@ -29,6 +29,8 @@ def solve_max_whole(G, L, U, k, incumbent_plan, verbose=True, time_limit=7200):
 
     # get initial set family and fail set
     I_family = get_initial_constraints(GC, L, U, k, verbose=verbose)
+    for fp in must_split_fips:
+        I_family.append( [fp] )
     Fail = list()
 
     # used to cache the detailed districts obtained in cluster_sketch_detail (by cluster)
