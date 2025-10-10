@@ -1,6 +1,6 @@
 # **Political Districting to Maximize Whole Counties**
 
-Python code for the [paper]() "Political districting to maximize whole counties" by Maral Shahmizad and Austin Buchanan. 
+Python code for the [paper](https://optimization-online.org/2025/10/political-districting-to-maximize-whole-counties/) "Political districting to maximize whole counties" by Maral Shahmizad and Austin Buchanan. 
 
 We consider a stylized redistricting problem. The task is to divide a state into $k$ contiguous districts each having a population between $L$ and $U$ such that the number of whole counties is maximized. 
 
