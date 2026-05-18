@@ -48,6 +48,50 @@ This coarsened graph is still quite large, so we find a county clustering to dec
 Each miniature instance is divided into districts using *sketch* and *detail*, yielding the final max-whole map:
 ![Figure 6](IA.png?raw=true "Max-whole map")
 
+## Code Structure
+
+```
+Political-Districting-to-Maximize-Whole-Counties/
+│
+├── README.md                         ← This file
+├── format.md                         ← Explains file formats (.json, .baf, .shp)
+│
+├── ── Core Python Modules (src) ──
+├── main.py                           ← Main code: Benders main problem, solver, and cut loop
+├── initialize.py                     ← Generates initial inequalities for main problem
+├── wcd_finder.py                     ← Subroutine for initial inequalities: whole-county district finder
+├── minimalize.py                     ← Cut strengthening routine for main problem inequalities
+|
+├── csd.py                            ← Benders subproblem: applies cluster, sketch, detail
+├── cluster_for_max_whole.py          ← Cluster step: partitions counties into clusters
+├── sketch_for_max_whole.py           ← Sketch step: fractional county-to-district assignment
+├── detail_for_max_whole.py           ← Detail step: full tract/block-level MIP
+|
+├── coarsen.py                        ← Routines for coarsening graphs (e.g., by county or tract)
+├── util.py                           ← Misc utility functions (read graphs, get [L,U] bounds, etc)
+├── number_of_districts.py            ← Number of districts per state/type
+│
+├── ── Experiment Notebooks ──
+├── max_whole_experiments.ipynb       ← Main results across all states/types (Table 2 of paper)
+├── upper_bounds.ipynb                ← Initial upper bound results (Table 1)
+├── enacted_whole.ipynb               ← Calculations: # whole counties in enacted plans (for Table 2)
+├── FL_CD_ad_hoc.ipynb                ← Computationally proves ad-hoc inequality, Florida congressional
+├── GA_SH_ad_hoc.ipynb                ← Computationally proves ad-hoc inequality, Georgia state house
+|
+├── case_study.ipynb                  ← Tennessee state house case study (Wygant v. Lee), initial results
+├── case_study_13.ipynb               ← Tennessee state house case study, but now with 13 VRA districts
+├── upper_bounds_case_study.ipynb     ← Apply upper bounding code to visualize initial inequalities
+|
+├── visualization_of_approach.ipynb   ← Create visuals for Figure 4 and readme
+│
+├── ── Other Folders ──
+├── dat/                              ← where input data (.json, .baf, .shp) should be stored 
+├── case-study-plans/                 ← BAFs for all plans from the case study (Section 7 of paper)
+├── max-whole-plans/                  ← BAFs for max-whole plans from the present paper
+├── min-split-plans/                  ← BAFs for min-split plans from our previous paper
+└── png/                              ← PNG maps of initial inequalities for each state/type
+```
+
 ## Results
 
 Our approach provides easy-to-understand optimality proofs suitable for courts and laypeople. Specifically, it produces a set family $ℐ$ with the property that at least one county from each set $I \in ℐ$ must be split. This is depicted as a county-level map in which a curve encircles each set $I\in ℐ$. Below are links to these initial inequalities $ℐ_0$. 
