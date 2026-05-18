@@ -8,7 +8,25 @@ Table 2 near the end of the paper shows the maximum number of whole counties ver
 
 ## Approach
 
-To solve this problem, we propose integer programming techniques based on combinatorial Benders decomposition. The main problem decides which counties to keep whole, and the subproblem coarsens the selected counties and then seeks a feasible plan. The subproblem is solved with a (nontrivial) extension of the cluster-sketch-detail approach from [our previous paper](https://github.com/maralshahmizad/Political-Districting-to-Minimize-County-Splits/tree/main), which optimized a different county preservation score. 
+To solve this problem, we propose integer programming techniques based on combinatorial Benders decomposition. The main problem decides which counties to keep whole, and the subproblem coarsens the selected counties and then seeks a feasible plan. The subproblem is solved with a (nontrivial) extension of the cluster-sketch-detail approach from [our previous paper](https://github.com/maralshahmizad/Political-Districting-to-Minimize-County-Splits/tree/main), which optimized a different county preservation score. A visualization follows.
+
+```
+Main Problem (Benders)
+    │
+    ▼
+Which counties are kept whole?
+    │
+    ├─── Coarsen selected whole counties into super-nodes
+    │
+    ▼
+Subproblem: Cluster–Sketch–Detail
+    │
+    ├── 1. CLUSTER  — Partition counties into county clusters
+    │
+    ├── 2. SKETCH   — Assign fractions of split counties to districts
+    │
+    └── 3. DETAIL   — Find a full tract/block-level districting plan
+```
 
 ## Example
 
