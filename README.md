@@ -92,6 +92,15 @@ Political-Districting-to-Maximize-Whole-Counties/
 └── png/                              ← PNG maps of initial inequalities for each state/type
 ```
 
+## Dependencies
+
+- gurobipy
+- networkx
+- geopandas
+- matplotlib
+- numpy
+- pandas
+
 ## Results
 
 Our approach provides easy-to-understand optimality proofs suitable for courts and laypeople. Specifically, it produces a set family $ℐ$ with the property that at least one county from each set $I \in ℐ$ must be split. This is depicted as a county-level map in which a curve encircles each set $I\in ℐ$. Below are links to these initial inequalities $ℐ_0$. 
